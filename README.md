@@ -19,5 +19,5 @@ pip install git+https://github.com/soda92/ruby-shim.git
 
 Then:
 ```
-python -m ruby_shinm
+python -m ruby_shim
 ```
