@@ -1,3 +1,7 @@
+ruby_shim/shim.c
+ruby_shim/*.exe
+ruby_shim/*.pdb
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
