@@ -10,10 +10,10 @@ def compile_shim():
 
     shim_c = CURRENT.joinpath("shim.c")
     shim_c.write_text(SHIM_C, encoding="utf-8")
-    subprocess.run(("python", "-m", "ziglang", "cc", str(shim_c)), check=True)
-    shim_out = CURRENT.joinpath("a.exe")
     shim_exe = CURRENT.joinpath("shim.exe")
-    shutil.copy(shim_out, shim_exe)
+    subprocess.run(
+        ("python", "-m", "ziglang", "cc", str(shim_c), "-o", str(shim_exe)), check=True
+    )
 
 
 def get_shim_path():
@@ -26,7 +26,10 @@ def get_shim_path():
 def generate_shim(bin: Path, bat: Path):
     shim_path = get_shim_path()
     shim_out = bat.parent.joinpath(bat.stem + ".exe")
-    shutil.copy(shim_path, shim_out)
+    try:
+        shutil.copy(shim_path, shim_out)
+    except Exception as _e:
+        pass
 
     shim_config = bat.parent.joinpath(bat.stem + ".shim")
     shim_config.write_text(
