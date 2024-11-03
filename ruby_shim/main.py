@@ -1,6 +1,6 @@
-from pathlib import Path
 import shutil
 import subprocess
+from pathlib import Path
 
 CURRENT = Path(__file__).resolve().parent
 
@@ -32,9 +32,10 @@ def generate_shim(bin: Path, bat: Path):
         pass
 
     shim_config = bat.parent.joinpath(bat.stem + ".shim")
+    file_path = bin.joinpath(bat.stem)
     shim_config.write_text(
         rf"""path = ruby.exe
-args = C:\Ruby33-x64\bin\{bat.stem}
+args = {file_path}
 """,
         encoding="utf-8",
     )
