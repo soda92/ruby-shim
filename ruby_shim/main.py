@@ -1,4 +1,5 @@
 import shutil
+import argparse
 import subprocess
 from pathlib import Path
 
@@ -41,22 +42,28 @@ args = {file_path}
     )
 
 
-def generate_shims(bin: Path, bats: list[Path]):
+def generate_shims(bin: Path):
+    print(bin)
+    bats = list(filter(lambda path: path.stem == path.name, bin.glob("*")))
     print(bats)
     for bat in bats:
         generate_shim(bin, bat)
-    pass
-
-
-def find_ruby():
-    installs = list(Path("C:/").glob("Ruby*"))
-    print(installs)
-
-    for p in installs:
-        bin = p.joinpath("bin")
-        bats = list(bin.glob("*.bat"))
-        generate_shims(bin, bats)
 
 
 def main():
-    find_ruby()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--path",
+        "-p",
+        type=str,
+        default="",
+        help=r"path for 'bin' dir. default to ruby installation in C:\. change it to related bin dir for rails application.",
+    )
+    args = parser.parse_args()
+    bin_path = ""
+    if args.path == "":
+        ruby_install = list(Path("C:/").glob("Ruby*"))[0]
+        bin_path = ruby_install.joinpath("bin")
+    else:
+        bin_path = Path(args.path).resolve()
+    generate_shims(bin_path)
