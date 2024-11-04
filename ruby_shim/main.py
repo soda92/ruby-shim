@@ -42,12 +42,32 @@ args = {file_path}
     )
 
 
+def is_script(file: Path):
+    if not file.is_file():
+        return False
+    if not (file.stem == file.name):
+        return False
+    content = file.read_text(encoding="utf-8")
+    line0 = content.split("\n")[0]
+    return "ruby" in line0
+
+
 def generate_shims(bin: Path):
-    print(bin)
-    bats = list(filter(lambda path: path.stem == path.name, bin.glob("*")))
-    print(bats)
+    print("dest dir: " + str(bin))
+    bats = list(filter(is_script, bin.glob("*")))
+    print(f"creating shims for {', '.join(map(lambda x:x.stem, bats))}")
     for bat in bats:
         generate_shim(bin, bat)
+
+
+def clean_shims(bin_path: Path):
+    shims = bin_path.glob("*.shim")
+    for shim in shims:
+        exe = shim.parent.joinpath(shim.stem + ".exe")
+        import os
+
+        os.unlink(exe)
+        os.unlink(shim)
 
 
 def main():
@@ -59,6 +79,13 @@ def main():
         default="",
         help=r"path for 'bin' dir. default to ruby installation in C:\. change it to related bin dir for rails application.",
     )
+    parser.add_argument(
+        "--clean",
+        "-c",
+        action="store_true",
+        default=False,
+        help="clean installed shim files",
+    )
     args = parser.parse_args()
     bin_path = ""
     if args.path == "":
@@ -66,4 +93,7 @@ def main():
         bin_path = ruby_install.joinpath("bin")
     else:
         bin_path = Path(args.path).resolve()
-    generate_shims(bin_path)
+    if args.clean:
+        clean_shims(bin_path)
+    else:
+        generate_shims(bin_path)
