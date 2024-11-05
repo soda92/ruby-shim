@@ -48,8 +48,8 @@ def is_script(file: Path):
     if not (file.stem == file.name):
         return False
     content = file.read_text(encoding="utf-8")
-    line0 = content.split("\n")[0]
-    return "ruby" in line0
+    header = content.split("\n")[0:5]
+    return "ruby" in "".join(header)
 
 
 def generate_shims(bin: Path):
